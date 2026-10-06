@@ -25,16 +25,12 @@ public class SearchItemServlet extends HttpServlet {
         
         try (Connection conn = DBConnection.getConnection()) {
             String sql = "SELECT * FROM items WHERE item_name LIKE ? AND status='ACTIVE'";
-            if (!category.isEmpty()) {
-                sql += " AND category = ?";
-            }
-            sql += " ORDER BY date_reported DESC";
+            if (!category.isEmpty()) { sql += " AND category = ?"; }
+            sql += " ORDER BY id DESC";
             
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, "%" + query + "%");
-            if (!category.isEmpty()) {
-                ps.setString(2, category);
-            }
+            if (!category.isEmpty()) { ps.setString(2, category); }
             
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -45,11 +41,17 @@ public class SearchItemServlet extends HttpServlet {
                 obj.put("category", rs.getString("category"));
                 obj.put("location", rs.getString("location"));
                 obj.put("date_reported", rs.getString("date_reported"));
+                
+                String img = rs.getString("image_base64");
+                obj.put("has_image", img != null && !img.isEmpty());
+                if(img != null && !img.isEmpty()) obj.put("image_url", img);
+                
+                String rew = rs.getString("reward");
+                obj.put("reward", rew != null ? rew : "");
+                
                 itemsArray.put(obj);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        } catch (Exception e) { e.printStackTrace(); }
         
         out.print(itemsArray.toString());
         out.flush();

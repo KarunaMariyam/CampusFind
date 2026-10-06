@@ -1,6 +1,7 @@
 com\campusfind\servlet\ClaimItemServlet.class
 com\campusfind\servlet\AdminServlet.class
 com\campusfind\servlet\LoginServlet.class
+com\campusfind\servlet\ResolveItemServlet.class
 com\campusfind\servlet\ReportItemServlet.class
 com\campusfind\util\DBConnection.class
 com\campusfind\servlet\RegisterServlet.class

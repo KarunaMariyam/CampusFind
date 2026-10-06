@@ -1,4 +1,74 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+import os
+
+base_dir = r"C:\Users\Karuna\Documents\Codex\CampusFind"
+
+# 1. Update AdminServlet.java to add "Delete User" powers securely via JDBC
+admin_servlet = """package com.campusfind.servlet;
+import com.campusfind.util.DBConnection;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.*;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+
+@WebServlet("/AdminServlet")
+public class AdminServlet extends HttpServlet {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String action = request.getParameter("action");
+        
+        try (Connection conn = DBConnection.getConnection()) {
+            if ("return".equals(action)) {
+                int itemId = Integer.parseInt(request.getParameter("itemId"));
+                String sql = "UPDATE items SET status='RETURNED' WHERE id=?";
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ps.setInt(1, itemId);
+                ps.executeUpdate();
+                
+            } else if ("delete".equals(action)) {
+                int itemId = Integer.parseInt(request.getParameter("itemId"));
+                // Delete claims for this item first to avoid foreign key issues
+                PreparedStatement psClaims = conn.prepareStatement("DELETE FROM claims WHERE item_id=?");
+                psClaims.setInt(1, itemId);
+                psClaims.executeUpdate();
+                
+                // Then delete item
+                String sql = "DELETE FROM items WHERE id=?";
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ps.setInt(1, itemId);
+                ps.executeUpdate();
+                
+            } else if ("deleteUser".equals(action)) {
+                int userId = Integer.parseInt(request.getParameter("userId"));
+                // 1. Delete user's claims
+                PreparedStatement psClaims = conn.prepareStatement("DELETE FROM claims WHERE user_id=?");
+                psClaims.setInt(1, userId);
+                psClaims.executeUpdate();
+                
+                // 2. Delete user's items
+                PreparedStatement psItems = conn.prepareStatement("DELETE FROM items WHERE user_id=?");
+                psItems.setInt(1, userId);
+                psItems.executeUpdate();
+                
+                // 3. Delete the user
+                PreparedStatement psUser = conn.prepareStatement("DELETE FROM users WHERE id=?");
+                psUser.setInt(1, userId);
+                psUser.executeUpdate();
+            }
+            response.sendRedirect("admin.jsp?msg=success");
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendRedirect("admin.jsp?error=true");
+        }
+    }
+}
+"""
+with open(os.path.join(base_dir, r"src\main\java\com\campusfind\servlet\AdminServlet.java"), "w", encoding="utf-8") as f:
+    f.write(admin_servlet)
+
+
+# 2. Update admin.jsp to clearly show powers: Managing Users and Deleting Spam
+admin_jsp = """<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.sql.*, com.campusfind.util.DBConnection, com.campusfind.model.User" %>
 <%
     User user = (User) session.getAttribute("user");
@@ -29,14 +99,13 @@
 <html>
 <head>
     <title>Admin Dashboard - CIT CampusFind</title>
-    <link rel="stylesheet" type="text/css" href="css/style.css?v=8">
+    <link rel="stylesheet" type="text/css" href="css/style.css?v=4">
 </head>
 <body>
     <nav>
         <h2>CIT CampusFind</h2>
         <div>
             <a href="admin.jsp" class="active">Admin Dashboard</a>
-            <a href="items.jsp">Browse Items</a>
             <a href="LogoutServlet" class="btn" style="background:#111;">Logout</a>
         </div>
     </nav>
@@ -123,3 +192,8 @@
     </div>
 </body>
 </html>
+"""
+with open(os.path.join(base_dir, r"src\main\webapp\admin.jsp"), "w", encoding="utf-8") as f:
+    f.write(admin_jsp)
+
+print("Admin dashboard heavily upgraded with Manage Users and spam deletion capabilities.")

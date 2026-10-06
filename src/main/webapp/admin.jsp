@@ -7,8 +7,7 @@
         return;
     }
     
-    // Fetch stats for dashboard
-    int totalItems = 0, lostCount = 0, foundCount = 0, returnedCount = 0, claimCount = 0;
+    int totalItems = 0, lostCount = 0, foundCount = 0, returnedCount = 0, userCount = 0;
     try (Connection conn = DBConnection.getConnection()) {
         ResultSet rs1 = conn.prepareStatement("SELECT COUNT(*) FROM items").executeQuery();
         if(rs1.next()) totalItems = rs1.getInt(1);
@@ -22,123 +21,103 @@
         ResultSet rs4 = conn.prepareStatement("SELECT COUNT(*) FROM items WHERE status='RETURNED'").executeQuery();
         if(rs4.next()) returnedCount = rs4.getInt(1);
         
-        ResultSet rs5 = conn.prepareStatement("SELECT COUNT(*) FROM claims").executeQuery();
-        if(rs5.next()) claimCount = rs5.getInt(1);
+        ResultSet rs5 = conn.prepareStatement("SELECT COUNT(*) FROM users WHERE role='STUDENT'").executeQuery();
+        if(rs5.next()) userCount = rs5.getInt(1);
     } catch(Exception e) { e.printStackTrace(); }
 %>
 <!DOCTYPE html>
 <html>
 <head>
     <title>Admin Dashboard - CIT CampusFind</title>
-    <link rel="stylesheet" type="text/css" href="css/style.css?v=2">
+    <link rel="stylesheet" type="text/css" href="css/style.css?v=8">
 </head>
 <body>
     <nav>
         <h2>CIT CampusFind</h2>
         <div>
-            <a href="admin.jsp">Dashboard</a>
+            <a href="admin.jsp" class="active">Admin Dashboard</a>
             <a href="items.jsp">Browse Items</a>
-            <a href="LogoutServlet">Logout</a>
+            <a href="LogoutServlet" class="btn" style="background:#111;">Logout</a>
         </div>
     </nav>
     <div class="container">
-        <h2>Welcome, Admin!</h2>
+        <h1>Admin Control Panel</h1>
         
-        <!-- Stats Cards -->
-        <div class="dashboard-grid">
-            <div class="dash-card">
-                <div class="dash-icon">📦</div>
-                <h4><%= totalItems %></h4>
-                <p>Total Reports</p>
+        <% if("success".equals(request.getParameter("msg"))) { %>
+            <div style="background:#EBFBEE; color:#2B8A3E; padding:15px; border-radius:12px; margin-bottom:20px; font-weight:600;">
+                Action completed successfully!
             </div>
-            <div class="dash-card">
-                <div class="dash-icon">🔴</div>
-                <h4><%= lostCount %></h4>
-                <p>Active Lost</p>
+        <% } %>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; margin-bottom: 30px;">
+            <div class="card" style="text-align:center; padding:20px;">
+                <h2 style="font-size:36px; margin:0; color:#E60023;"><%= totalItems %></h2>
+                <p>Total Items</p>
             </div>
-            <div class="dash-card">
-                <div class="dash-icon">🟢</div>
-                <h4><%= foundCount %></h4>
-                <p>Active Found</p>
+            <div class="card" style="text-align:center; padding:20px;">
+                <h2 style="font-size:36px; margin:0;"><%= returnedCount %></h2>
+                <p>Resolved</p>
             </div>
-            <div class="dash-card">
-                <div class="dash-icon">✅</div>
-                <h4><%= returnedCount %></h4>
-                <p>Returned</p>
-            </div>
-            <div class="dash-card">
-                <div class="dash-icon">📩</div>
-                <h4><%= claimCount %></h4>
-                <p>Claims</p>
+            <div class="card" style="text-align:center; padding:20px;">
+                <h2 style="font-size:36px; margin:0;"><%= userCount %></h2>
+                <p>Students</p>
             </div>
         </div>
         
-        <!-- Manage Reports Table -->
-        <div class="card" style="margin-top: 30px;">
-            <h3>Manage All Reports</h3>
+        <div class="card">
+            <h2>1. Manage Students</h2>
+            <p style="color:#666; margin-bottom:15px;">Remove students who create fake reports.</p>
             <table>
-                <tr><th>ID</th><th>Item</th><th>Type</th><th>Location</th><th>Date</th><th>Status</th><th>Action</th></tr>
+                <tr><th>ID</th><th>Name</th><th>Email</th><th>Action</th></tr>
                 <%
                     try (Connection conn = DBConnection.getConnection()) {
-                        String sql = "SELECT * FROM items ORDER BY id DESC";
-                        PreparedStatement ps = conn.prepareStatement(sql);
+                        PreparedStatement ps = conn.prepareStatement("SELECT * FROM users WHERE role='STUDENT' ORDER BY id DESC");
                         ResultSet rs = ps.executeQuery();
                         while(rs.next()) {
                 %>
                 <tr>
                     <td><%= rs.getInt("id") %></td>
-                    <td><%= rs.getString("item_name") %></td>
-                    <td><span class="<%= "LOST".equals(rs.getString("type")) ? "badge-lost" : "badge-found" %>"><%= rs.getString("type") %></span></td>
-                    <td><%= rs.getString("location") %></td>
-                    <td><%= rs.getString("date_reported") %></td>
-                    <td><%= rs.getString("status") %></td>
+                    <td><strong><%= rs.getString("name") %></strong></td>
+                    <td><%= rs.getString("email") %></td>
                     <td>
-                        <form action="AdminServlet" method="POST" style="display:inline;">
-                            <input type="hidden" name="itemId" value="<%= rs.getInt("id") %>">
-                            <% if(!"RETURNED".equals(rs.getString("status"))) { %>
-                                <button type="submit" name="action" value="return" class="btn" style="padding:8px 14px; font-size:13px;">Mark Returned</button>
-                            <% } %>
-                            <button type="submit" name="action" value="delete" class="btn btn-danger" style="padding:8px 14px; font-size:13px;" onclick="return confirm('Are you sure you want to delete this report?');">Delete</button>
+                        <form action="AdminServlet" method="POST" style="margin:0;">
+                            <input type="hidden" name="action" value="deleteUser">
+                            <input type="hidden" name="userId" value="<%= rs.getInt("id") %>">
+                            <button type="submit" class="btn" style="background:#E60023; padding:8px 16px; font-size:13px;" onclick="return confirm('WARNING: This will permanently delete the user AND all their lost/found reports. Proceed?');">Ban & Delete User</button>
                         </form>
                     </td>
                 </tr>
-                <%
-                        }
-                    } catch(Exception e) { e.printStackTrace(); }
-                %>
+                <% } } catch(Exception e) { e.printStackTrace(); } %>
             </table>
         </div>
-        
-        <!-- Claims Section -->
+
         <div class="card">
-            <h3>Recent Claims</h3>
+            <h2>2. Manage All Reports</h2>
+            <p style="color:#666; margin-bottom:15px;">Mark items as returned or force-delete spam posts.</p>
             <table>
-                <tr><th>Claim ID</th><th>Item</th><th>Claimed By</th><th>Message</th><th>Date</th></tr>
+                <tr><th>Report ID</th><th>Item</th><th>Type</th><th>Status</th><th>Actions</th></tr>
                 <%
                     try (Connection conn = DBConnection.getConnection()) {
-                        String sql = "SELECT c.id, i.item_name, u.name, c.message, c.claim_date FROM claims c JOIN items i ON c.item_id = i.id JOIN users u ON c.user_id = u.id ORDER BY c.claim_date DESC";
-                        PreparedStatement ps = conn.prepareStatement(sql);
+                        PreparedStatement ps = conn.prepareStatement("SELECT * FROM items ORDER BY id DESC");
                         ResultSet rs = ps.executeQuery();
-                        boolean hasClaims = false;
                         while(rs.next()) {
-                            hasClaims = true;
                 %>
                 <tr>
-                    <td><%= rs.getInt("id") %></td>
-                    <td><%= rs.getString("item_name") %></td>
-                    <td><%= rs.getString("name") %></td>
-                    <td><%= rs.getString("message") %></td>
-                    <td><%= rs.getString("claim_date") %></td>
+                    <td>#<%= rs.getInt("id") %></td>
+                    <td><strong><%= rs.getString("item_name") %></strong></td>
+                    <td><span class="<%= "LOST".equals(rs.getString("type")) ? "badge-lost" : "badge-found" %>"><%= rs.getString("type") %></span></td>
+                    <td><%= rs.getString("status") %></td>
+                    <td>
+                        <form action="AdminServlet" method="POST" style="margin:0; display:flex; gap:10px;">
+                            <input type="hidden" name="itemId" value="<%= rs.getInt("id") %>">
+                            <% if(!"RETURNED".equals(rs.getString("status"))) { %>
+                                <button type="submit" name="action" value="return" class="btn" style="background:#111; padding:8px 16px; font-size:13px;">Mark Returned</button>
+                            <% } %>
+                            <button type="submit" name="action" value="delete" class="btn" style="background:#E60023; padding:8px 16px; font-size:13px;" onclick="return confirm('Permanently delete this report?');">Delete Post</button>
+                        </form>
+                    </td>
                 </tr>
-                <%
-                        }
-                        if(!hasClaims) {
-                %>
-                <tr><td colspan="5" style="text-align:center; color:#999;">No claims yet.</td></tr>
-                <%
-                        }
-                    } catch(Exception e) { e.printStackTrace(); }
-                %>
+                <% } } catch(Exception e) { e.printStackTrace(); } %>
             </table>
         </div>
     </div>

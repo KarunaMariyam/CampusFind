@@ -3,7 +3,7 @@
 <html>
 <head>
     <title>Browse Items - CIT CampusFind</title>
-    <link rel="stylesheet" type="text/css" href="css/style.css?v=3">
+    <link rel="stylesheet" type="text/css" href="css/style.css?v=8">
     <script src="js/script.js"></script>
 </head>
 <body onload="searchItems('')">

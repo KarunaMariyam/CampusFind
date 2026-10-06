@@ -1,4 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+import os
+import re
+
+base_dir = r"C:\Users\Karuna\Documents\Codex\CampusFind"
+
+# 1. Update CSS for Modern, Clean "Aesthetic Cool" (No Cursive)
+css_content = """@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 :root {
     --bg: #FFFDF4; /* Very light aesthetic Butter Yellow */
@@ -128,3 +134,40 @@ td { border-bottom: 1px solid var(--border); padding: 16px; }
 
 .badge-lost { background: #FFF0F0; color: #D9534F; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 800; }
 .badge-found { background: #EBFBEE; color: #2B8A3E; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 800; }
+"""
+with open(os.path.join(base_dir, r"src\main\webapp\css\style.css"), "w", encoding="utf-8") as f:
+    f.write(css_content)
+
+
+# 2. Update dashboard.jsp to add a MASSIVE Aesthetic Welcome Banner
+dashboard_path = os.path.join(base_dir, r"src\main\webapp\dashboard.jsp")
+with open(dashboard_path, "r", encoding="utf-8") as f:
+    dash_content = f.read()
+
+# Replace the old <h2>Welcome...</h2> with the new massive banner
+banner_html = """
+        <!-- Massive Aesthetic Welcome Banner -->
+        <div style="background: linear-gradient(135deg, #E05D3A, #F28C6D); padding: 60px 40px; border-radius: 24px; color: #FFF; margin-bottom: 40px; text-align: center; box-shadow: 0 15px 40px rgba(224, 93, 58, 0.25); position: relative; overflow: hidden;">
+            <div style="position:absolute; top:-50px; right:-20px; font-size:200px; opacity:0.1; line-height:1;">✨</div>
+            <h1 style="font-size: 56px; color: #FFF; margin: 0; letter-spacing: -2px; font-weight:800;">Welcome, <%= user.getName() %>! 👋</h1>
+            <p style="font-size: 20px; opacity: 0.95; margin-top: 15px; font-weight:500;">Ready to connect your lost and found items on campus.</p>
+        </div>
+"""
+# Use regex to replace <h2>Welcome, <%= user.getName() %>!</h2>
+dash_content = re.sub(r'<h2>Welcome, <%= user\.getName\(\) %>!</h2>', banner_html, dash_content)
+
+with open(dashboard_path, "w", encoding="utf-8") as f:
+    f.write(dash_content)
+
+
+# 3. Cache buster update
+import glob
+jsp_files = glob.glob(os.path.join(base_dir, "src/main/webapp/*.jsp"))
+for jsp in jsp_files:
+    with open(jsp, "r", encoding="utf-8") as f:
+        content = f.read()
+    content = re.sub(r'href="css/style\.css(\?v=\d+)?"', 'href="css/style.css?v=8"', content)
+    with open(jsp, "w", encoding="utf-8") as f:
+        f.write(content)
+
+print("Cursive removed. Modern cool Plus Jakarta Sans applied. Massive dashboard welcome banner added.")

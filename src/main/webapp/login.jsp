@@ -14,7 +14,7 @@
 <html>
 <head>
     <title>Login - CIT CampusFind</title>
-    <link rel="stylesheet" type="text/css" href="css/style.css?v=2">
+    <link rel="stylesheet" type="text/css" href="css/style.css?v=8">
 </head>
 <body>
     <nav><h2>CIT CampusFind</h2><a href="index.jsp">Home</a></nav>
