@@ -4,21 +4,26 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 
 public class DBConnection {
-    // IMPORTANT: Change these values to match your local MySQL setup
-    private static final String URL = "jdbc:mysql://localhost:3306/campusfind";
-    private static final String USER = "root";
-    private static final String PASSWORD = "1234"; 
-
     public static Connection getConnection() {
         Connection conn = null;
         try {
-            // Load the MySQL JDBC Driver
             Class.forName("com.mysql.cj.jdbc.Driver");
-            // Establish the connection
-            conn = DriverManager.getConnection(URL, USER, PASSWORD);
+            
+            // Use Cloud Environment Variables if on Render, otherwise use Localhost
+            String url = System.getenv("DB_URL");
+            String user = System.getenv("DB_USER");
+            String password = System.getenv("DB_PASSWORD");
+            
+            if (url == null || url.trim().isEmpty()) {
+                url = "jdbc:mysql://localhost:3306/campusfind";
+                user = "root";
+                password = "1234";
+            }
+            
+            conn = DriverManager.getConnection(url, user, password);
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("Database connection failed. Check credentials in DBConnection.java");
+            System.out.println("Database connection failed.");
         }
         return conn;
     }
