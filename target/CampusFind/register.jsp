@@ -3,7 +3,7 @@
 <html>
 <head>
     <title>Register - CIT CampusFind</title>
-    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css?v=2">
     <script src="js/script.js"></script>
 </head>
 <body>

@@ -3,7 +3,7 @@
 <html>
 <head>
     <title>CIT CampusFind - Home</title>
-    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css?v=2">
     <script src="js/script.js"></script>
 </head>
 <body onload="loadGuidelines()">
@@ -11,8 +11,13 @@
         <h2>CIT CampusFind</h2>
         <div>
             <a href="items.jsp">Browse Items</a>
-            <% if(session.getAttribute("user") != null) { %>
-                <a href="dashboard.jsp">Dashboard</a>
+            <% com.campusfind.model.User user = (com.campusfind.model.User) session.getAttribute("user");
+               if(user != null) { 
+                   if("ADMIN".equals(user.getRole())) { %>
+                       <a href="admin.jsp">Admin Dashboard</a>
+                   <% } else { %>
+                       <a href="dashboard.jsp">Dashboard</a>
+                   <% } %>
                 <a href="LogoutServlet">Logout</a>
             <% } else { %>
                 <a href="login.jsp">Login</a>

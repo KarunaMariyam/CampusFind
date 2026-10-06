@@ -9,7 +9,7 @@
 <html>
 <head>
     <title>Item Details - CIT CampusFind</title>
-    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css?v=2">
 </head>
 <body>
     <nav><h2>CIT CampusFind</h2><a href="items.jsp">Back to Items</a></nav>

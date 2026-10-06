@@ -7,7 +7,7 @@ public class DBConnection {
     // IMPORTANT: Change these values to match your local MySQL setup
     private static final String URL = "jdbc:mysql://localhost:3306/campusfind";
     private static final String USER = "root";
-    private static final String PASSWORD = "root"; 
+    private static final String PASSWORD = "1234"; 
 
     public static Connection getConnection() {
         Connection conn = null;

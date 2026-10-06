@@ -20,14 +20,19 @@ public class GuidelinesServlet extends HttpServlet {
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
         
-        try {
-            // 18. XML DOM Parser
-            InputStream xmlStream = getServletContext().getResourceAsStream("/data/guidelines.xml");
+        try (InputStream xmlStream = getServletContext().getResourceAsStream("/data/guidelines.xml")) {
+            if (xmlStream == null) {
+                out.println("<li>Error: Cannot find guidelines.xml</li>");
+                return;
+            }
+            
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            // IMPORTANT FIX: Prevent Java from trying to resolve the DTD file over network/filesystem which causes crashes
+            factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document doc = builder.parse(xmlStream);
             
-            // 19. XPath - Fetch only 'Important' rules
             XPathFactory xPathfactory = XPathFactory.newInstance();
             XPath xpath = xPathfactory.newXPath();
             String expression = "/guidelines/rule[@type='Important']";
@@ -35,11 +40,11 @@ public class GuidelinesServlet extends HttpServlet {
             
             for (int i = 0; i < nodeList.getLength(); i++) {
                 Element el = (Element) nodeList.item(i);
-                out.println("<li><strong>Important:</strong> " + el.getTextContent() + "</li>");
+                out.println("<li style='margin-bottom:10px;'><strong>Important:</strong> " + el.getTextContent() + "</li>");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            out.println("<li>Error loading guidelines.</li>");
+            out.println("<li style='color:red;'>XML Parsing Error: " + e.getMessage() + "</li>");
         }
     }
 }

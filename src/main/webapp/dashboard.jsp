@@ -6,12 +6,16 @@
         response.sendRedirect("login.jsp");
         return;
     }
+    if("ADMIN".equals(user.getRole())) {
+        response.sendRedirect("admin.jsp");
+        return;
+    }
 %>
 <!DOCTYPE html>
 <html>
 <head>
     <title>Dashboard - CIT CampusFind</title>
-    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css?v=2">
 </head>
 <body>
     <nav>
@@ -24,13 +28,22 @@
     </nav>
     <div class="container">
         <h2>Welcome, <%= user.getName() %>!</h2>
-        <div class="card">
-            <h3>CIT Student Dashboard</h3>
-            <p>Select an action below:</p>
-            <br>
-            <a href="report.jsp" class="btn">Report Lost/Found Item</a>
-            <a href="my-reports.jsp" class="btn">My Reports & Claims</a>
-            <a href="ecommerce.jsp" class="btn">Campus Essentials Store</a>
+        <div class="dashboard-grid">
+            <a href="report.jsp" class="dash-card">
+                <div class="dash-icon">📝</div>
+                <h4>Report Item</h4>
+                <p>Report a lost or found item</p>
+            </a>
+            <a href="items.jsp" class="dash-card">
+                <div class="dash-icon">🔍</div>
+                <h4>Browse Items</h4>
+                <p>Search all reported items</p>
+            </a>
+            <a href="my-reports.jsp" class="dash-card">
+                <div class="dash-icon">📋</div>
+                <h4>My Reports</h4>
+                <p>View your submitted reports</p>
+            </a>
         </div>
     </div>
 </body>

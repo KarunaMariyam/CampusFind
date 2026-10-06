@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.net.URLEncoder;
 
 @WebServlet("/LoginServlet")
 public class LoginServlet extends HttpServlet {
@@ -17,6 +18,11 @@ public class LoginServlet extends HttpServlet {
         String remember = request.getParameter("remember");
         
         try (Connection conn = DBConnection.getConnection()) {
+            if (conn == null) {
+                response.sendRedirect("login.jsp?error=exception&msg=" + URLEncoder.encode("Database connection failed. Please check MySQL is running and DBConnection.java has correct username/password.", "UTF-8"));
+                return;
+            }
+            
             String sql = "SELECT * FROM users WHERE email=? AND password=?";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, email);
@@ -30,11 +36,7 @@ public class LoginServlet extends HttpServlet {
                 
                 if ("on".equals(remember)) {
                     Cookie cookie = new Cookie("rememberedUser", email);
-                    cookie.setMaxAge(60 * 60 * 24 * 30); // 30 days
-                    response.addCookie(cookie);
-                } else {
-                    Cookie cookie = new Cookie("rememberedUser", "");
-                    cookie.setMaxAge(0);
+                    cookie.setMaxAge(60 * 60 * 24 * 30);
                     response.addCookie(cookie);
                 }
                 
@@ -48,7 +50,7 @@ public class LoginServlet extends HttpServlet {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect("login.jsp?error=exception");
+            response.sendRedirect("login.jsp?error=exception&msg=" + URLEncoder.encode(e.getMessage(), "UTF-8"));
         }
     }
 }
