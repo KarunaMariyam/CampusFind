@@ -1,0 +1,3 @@
+<!ELEMENT guidelines (rule+)>
+<!ELEMENT rule (#PCDATA)>
+<!ATTLIST rule type CDATA #REQUIRED>

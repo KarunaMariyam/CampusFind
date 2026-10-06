@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE guidelines SYSTEM "guidelines.dtd">
+<guidelines xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="guidelines.xsd">
+    <rule type="Important">Turn in found items to the administration within 24 hours.</rule>
+    <rule type="General">Provide accurate descriptions when reporting a lost item.</rule>
+    <rule type="Important">Fraudulent claims will lead to immediate disciplinary action.</rule>
+    <rule type="General">You can view your reports in the dashboard.</rule>
+</guidelines>
