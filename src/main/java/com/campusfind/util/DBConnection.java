@@ -16,7 +16,7 @@ public class DBConnection {
             // Still using environment variable for the password to keep it secure
             String password = System.getenv("DB_PASSWORD");
             
-            // If testing locally on your laptop without the environment variable, put your Aiven password here!
+            // Fallback for local testing (remove in production if strict security is needed)
             if (password == null || password.trim().isEmpty()) {
                 password = "PUT_YOUR_AIVEN_PASSWORD_HERE"; 
             }
