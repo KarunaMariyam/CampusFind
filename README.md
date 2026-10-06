@@ -1,78 +1,54 @@
-# CampusFind – A College Lost & Found Portal
+# 🏫 CampusFind - College Lost & Found Portal
 
-## Problem Statement
-Students frequently lose personal belongings on campus, while found items may not easily reach their owners. CampusFind provides a simple centralized portal for reporting, searching, and claiming lost and found items.
+CampusFind is a smart, aesthetically pleasing, and fully functional web application designed to help college students quickly report, track, and claim lost or found items on campus. 
 
-## Objectives
-- Report lost/found items
-- Search reported items
-- Allow users to submit claims
-- Track item status
-- Demonstrate Web Technology concepts (HTML, CSS, JS, JSP, Servlets, DB, AJAX, XML, PHP)
+This project was built from scratch utilizing a strict **Java EE** technology stack, demonstrating the seamless integration of frontend design with complex backend database operations, without relying on external UI frameworks or third-party cloud APIs.
 
-## Technologies Used
-- Frontend: HTML5, CSS3, JavaScript (Vanilla)
-- Backend: Java Servlets, JSP (Jakarta EE / Tomcat 10)
-- Database: MySQL
-- Data Formats: XML, JSON (via AJAX)
-- Misc: PHP
+## ✨ Key Features
 
-## Database Setup
-1. Open MySQL Workbench or your terminal.
-2. Run the `database.sql` script provided in the root folder.
-   This will:
-   - Create a database called `campusfind`
-   - Create `users`, `items`, and `claims` tables
-   - Insert sample user and admin accounts
-3. Open `src/main/java/com/campusfind/util/DBConnection.java`
-4. Update the `USER` and `PASSWORD` to match your local MySQL credentials.
+- 📸 **Smart Photo Uploads:** Uses HTML5 Canvas and JavaScript to instantly compress images client-side into Base64 format before securely saving them in the database.
+- 🔍 **Live AJAX Search & Filtering:** Instantly filter lost and found items by category or keyword using the Fetch API and DOM manipulation—no page reloads required.
+- 💡 **Smart Connect (Auto-Match):** The backend leverages complex `JOIN` SQL queries to automatically cross-reference lost items with found items in the same category, alerting students of possible matches on their dashboard.
+- 📳 **Secure Handover System (Pairing Code):** Generates a mathematically hashed 4-digit secret "Handover Code" for found items. The owner must type this code into the portal when meeting in person to officially resolve and pair the transaction.
+- 🖨️ **Printable Missing Posters:** Uses CSS `@media print` rules to auto-generate a beautiful, printable A4 missing poster for any lost item directly from the browser.
+- 📍 **Meetup Location Pinpointing:** Dynamically generates map coordinates based on text input to help students find each other on campus.
+- 👑 **Admin God-Mode:** A comprehensive Admin Dashboard to monitor live campus statistics, enforce rules, securely ban spam accounts (cascading deletes), and manage all reports.
 
-## How to Run (Visual Studio Code)
-1. Ensure you have the **Extension Pack for Java** and **Community Server Connectors** (or Tomcat for Java) extensions installed in VS Code.
-2. Ensure you have **Apache Tomcat 10** downloaded and extracted on your PC.
-3. Open the `CampusFind` folder in VS Code.
-4. VS Code should recognize the `pom.xml` and configure the Java project. 
-5. Right-click on your Tomcat server in the "Servers" tab (bottom left), add the CampusFind app, and click **Start**.
-6. Alternatively, copy the project into the Tomcat `webapps` folder, or build a `.war` file via Maven (`mvn clean install`) and deploy.
-7. Open your browser and navigate to: `http://localhost:8080/CampusFind/` (or the respective port you configure).
-8. For the **PHP Demo**, since Tomcat does not natively run PHP, you must host `php-demo.php` using a PHP server (like XAMPP/WAMP/LAMP). Simply copy `php-demo.php` to your `htdocs` folder to test that particular page.
+## 🛠️ Technology Stack (20-Point Checklist)
 
-## Sample Login Credentials
-- **Student Account:**
-  - Email: `john@student.com`
-  - Password: `john123`
-- **Admin Account:**
-  - Email: `admin@campusfind.com`
-  - Password: `admin123`
+This project strictly adheres to standard Web Technologies:
 
-## Web Technology Concepts Demonstrated
-Here is a breakdown of how the lab syllabus requirements were met:
+### Frontend
+* **HTML5** & **CSS3** (Modern variables, grids, flexbox)
+* **JavaScript** & **DOM Manipulation**
+* **AJAX** & **Fetch API**
 
-| Concept | Project Feature | File Reference |
-|---------|-----------------|----------------|
-| **HTML/CSS** | All user interfaces, structured forms, and clean stylesheet | `style.css`, all `.jsp` and `.html` files |
-| **JavaScript** | Client-side validation for passwords on Registration | `script.js` -> `validateRegistration()` |
-| **Java Servlets** | Backend controllers handling form submissions and logic | `LoginServlet.java`, `ReportItemServlet.java`, etc. |
-| **JSP** | Dynamic web pages pulling session/DB data into views | `dashboard.jsp`, `items.jsp`, `my-reports.jsp` |
-| **Cookies** | "Remember Me" functionality on the Login page | `LoginServlet.java`, `login.jsp` |
-| **Session Management** | Restricting access to dashboard, tracking logged-in user | `LoginServlet.java`, `dashboard.jsp`, `LogoutServlet.java` |
-| **Database Connectivity** | Connecting to MySQL via JDBC, CRUD operations | `DBConnection.java`, `database.sql` |
-| **AJAX** | Live search demonstration for finding items instantly | `ajax-demo.jsp`, `script.js`, `SearchItemServlet.java` |
-| **XML** | Parsing a sample `items.xml` using JavaScript DOM into a table | `xml-demo.html`, `data/items.xml`, `script.js` |
-| **PHP** | A standalone demo processing a PHP array for a mock view | `php-demo.php` |
-| **E-commerce** | "Campus Essentials" demo with Add to Cart / Order session | `ecommerce.jsp` |
+### Backend & Database
+* **Java** & **Java Servlets**
+* **JSP (JavaServer Pages)**
+* **MySQL** (Relational Database)
+* **JDBC (Java Database Connectivity)**
+* **HTTP Session** & **Cookies** (State Management & Auth)
 
-## Testing Checklist
-- [x] Registration
-- [x] Duplicate registration error handling
-- [x] Login & Session creation
-- [x] Cookie ("Remember Me") creation
-- [x] Report Lost / Found item
-- [x] Browse items & View details
-- [x] Submit claim
-- [x] Admin Login -> Mark Returned & Delete
-- [x] AJAX Search demo
-- [x] XML Table generation demo
-- [x] PHP standalone demo
-- [x] Campus Essentials cart demonstration
-- [x] Logout (Invalidates session)
+### XML Processing
+* **XML** (Campus Guidelines storage)
+* **DTD** & **XSD** (Data Validation)
+* **XML DOM Parser** & **XPath** (Data Extraction)
+
+### Build & Deployment
+* **Maven** (Dependency Management & Packaging)
+* **Apache Tomcat** (Web Server Container)
+* **Docker** (Cloud Deployment ready)
+
+## 🚀 How to Run Locally
+
+1. **Database Setup:** 
+   Ensure MySQL is running. Create a database named `campusfind`.
+2. **Configure Credentials:** 
+   Update `src/main/java/com/campusfind/util/DBConnection.java` with your local MySQL `root` password.
+3. **Build the Project:** 
+   Run `mvn clean package` in the project root directory.
+4. **Deploy:** 
+   Copy the generated `CampusFind.war` from the `target/` directory to your Apache Tomcat `webapps/` folder.
+5. **Start Server:** 
+   Start Tomcat and visit `http://localhost:8080/CampusFind`.
