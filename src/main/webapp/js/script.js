@@ -1,47 +1,68 @@
 
-// 3. JavaScript & 4. DOM Manipulation
-function validateRegistration() {
-    let pwd = document.getElementById("password").value;
-    let cpwd = document.getElementById("confirmPassword").value;
-    if (pwd !== cpwd) {
-        alert("Passwords do not match!");
-        return false;
-    }
-    return true;
+let currentCategory = "";
+
+function setCategory(btn, category) {
+    // Update active pill styling
+    document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    
+    currentCategory = category;
+    triggerSearch();
 }
 
-// 5. AJAX & 20. Fetch API
+function triggerSearch() {
+    let query = document.getElementById("searchInput").value;
+    searchItems(query);
+}
+
+function getEmojiForCategory(category) {
+    if (category === 'Electronics') return '💻';
+    if (category === 'Personal') return '🎒';
+    if (category === 'Documents') return '📚';
+    return '✨';
+}
+
+function copyShareLink(id) {
+    const url = window.location.origin + '/CampusFind/item-details.jsp?id=' + id;
+    navigator.clipboard.writeText(url).then(() => {
+        alert("Link copied! Share it with your friends.");
+    });
+}
+
 function searchItems(query) {
-    if (query.length < 2 && query.length > 0) return; // Wait for at least 2 chars
-    
-    let url = query.length === 0 ? 'SearchItemServlet?q=' : 'SearchItemServlet?q=' + encodeURIComponent(query);
+    let url = 'SearchItemServlet?q=' + encodeURIComponent(query) + '&cat=' + encodeURIComponent(currentCategory);
     
     fetch(url)
         .then(response => response.json())
         .then(data => {
             let html = "";
             if(data.length === 0) {
-                html = "<p>No items found.</p>";
+                html = "<p style='grid-column: 1/-1; text-align:center; color:#999;'>No items found.</p>";
             } else {
                 data.forEach(item => {
                     let typeClass = item.type === 'LOST' ? 'badge-lost' : 'badge-found';
-                    html += `<div class="item-card card">
+                    let emoji = getEmojiForCategory(item.category);
+                    
+                    html += `<div class="item-card">
+                        <div class="item-card-emoji">${emoji}</div>
                         <h4>${item.item_name} <span class="${typeClass}">${item.type}</span></h4>
-                        <p><strong>Category:</strong> ${item.category}</p>
-                        <p><strong>Location:</strong> ${item.location}</p>
-                        <a href="item-details.jsp?id=${item.id}" class="btn">View Details</a>
+                        <p><strong>📍</strong> ${item.location}</p>
+                        <p><strong>🕒</strong> ${item.date_reported}</p>
+                        <div class="action-bar">
+                            <a href="item-details.jsp?id=${item.id}" class="btn" style="padding: 8px 16px;">View</a>
+                            <button onclick="copyShareLink(${item.id})" class="share-btn">🔗 Share</button>
+                        </div>
                     </div>`;
                 });
             }
-            document.getElementById("searchResults").innerHTML = html; // DOM Manipulation
+            document.getElementById("searchResults").innerHTML = html;
         });
 }
 
-// 20. Fetch API reading from our XML parser servlet
 function loadGuidelines() {
     fetch('GuidelinesServlet')
         .then(response => response.text())
         .then(html => {
-            document.getElementById('guidelines-list').innerHTML = html; // DOM Manipulation
+            document.getElementById('guidelines-list').innerHTML = html;
         });
 }
