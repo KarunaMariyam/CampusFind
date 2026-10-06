@@ -9,15 +9,16 @@ public class DBConnection {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             
-            // Use Cloud Environment Variables if on Render, otherwise use Localhost
-            String url = System.getenv("DB_URL");
-            String user = System.getenv("DB_USER");
+            // Hardcoding the Aiven Database details to bypass Render Environment Variable bugs
+            String url = "jdbc:mysql://mysql-2d9d59d5-campusfind.c.aivencloud.com:27727/defaultdb?useSSL=true&requireSSL=true&verifyServerCertificate=false&allowPublicKeyRetrieval=true";
+            String user = "avnadmin";
+            
+            // Still using environment variable for the password to keep it secure
             String password = System.getenv("DB_PASSWORD");
             
-            if (url == null || url.trim().isEmpty()) {
-                url = "jdbc:mysql://localhost:3306/campusfind";
-                user = "root";
-                password = "1234";
+            // If testing locally on your laptop without the environment variable, put your Aiven password here!
+            if (password == null || password.trim().isEmpty()) {
+                password = "PUT_YOUR_AIVEN_PASSWORD_HERE"; 
             }
             
             conn = DriverManager.getConnection(url, user, password);
